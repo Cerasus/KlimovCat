@@ -7,6 +7,7 @@ import androidx.core.app.NotificationManagerCompat;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.RingtoneManager;
@@ -41,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //Созданиея намерения (что будет по нажатию на уведомление (запуск приложения))
                 Intent notificationIntent = new Intent(MainActivity.this, MainActivity.class);
+                notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP); // с данными флагами не запускается два приложения
+
                 PendingIntent contentIntent =
                         PendingIntent.getActivity(MainActivity.this, 0,
                                 notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -48,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 //Создание уведомления
                 NotificationCompat.Builder builder =
                         new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID);
-                builder.setSmallIcon(R.drawable.ic_error_outline_black_24dp)
+                builder.setSmallIcon(android.R.drawable.stat_sys_upload) // анимированая иконка (обычная ic_error_outline_black_24dp)
                         .setContentTitle("Напоминание")
                         .setContentText("Пора покормить кота")
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -59,8 +62,14 @@ public class MainActivity extends AppCompatActivity {
                         //.setDefaults(Notification.DEFAULT_ALL) //вибрация, звук, свет по умолчанию
                         .setSound(ringUri)
                         .setVibrate(vibrate)
-                        //Включение светодиодной индикации
-                        .setLights(Color.RED, 1, 0)
+                        .setLights(Color.RED, 1, 0) //Включение светодиодной индикации
+                        .setColor(Color.RED) //Цвет маленькой иконки, текста и прогресбара
+                        .addAction(R.drawable.ic_lock_open_black_24dp,"Open",contentIntent) //добавление кнопок с вариантами действий
+                        .addAction(R.drawable.ic_refresh_black_24dp, "Cancel", contentIntent)
+                        .addAction(R.drawable.ic_pets_black_24dp, "Other", contentIntent)
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText("Это я, почтальон Печкин. Принёс для вас посылку. "
+                                + "Только я вам её не отдам. Потому что у вас документов нету. ")) // позволяет писать большой текст
+                        //.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(BitmapFactory.decodeResource(getResources(),R.drawable.alarm))) // позволяет добавить большую картинку
                         .setAutoCancel(true)
                         .setContentIntent(contentIntent);
 
